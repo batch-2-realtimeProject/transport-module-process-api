@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="common-flowsSub_Flow" doc:id="e6bfc810-7542-4cd1-9046-71f72c580a3e" >
+		<ee:transform doc:name="transactionId" doc:id="c79e192b-e462-4901-82d2-e0e5c4810890" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.Headers.transactionId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="initialize common variables" doc:id="940dbbde-57d6-4bb9-ac6a-99a864eae089" >
+			<ee:variables >
+				<ee:set-variable variableName="transportType" ><![CDATA[attributes.uriParams.'transportType'
+				]]></ee:set-variable>
+				<ee:set-variable variableName="companyName" ><![CDATA[attributes.queryParams.companyName]]></ee:set-variable>
+				<ee:set-variable variableName="departureLocation" ><![CDATA[attributes.queryParams.departureLocation]]></ee:set-variable>
+				<ee:set-variable variableName="destinationLocation" ><![CDATA[attributes.queryParams.destinationLocation]]></ee:set-variable>
+				<ee:set-variable variableName="requestTimezone" ><![CDATA[attributes.queryParams.requestTimezone]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+</mule>

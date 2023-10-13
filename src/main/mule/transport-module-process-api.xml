@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+	<flow name="transport-module-process-api-main">
+		<http:listener
+			config-ref="transport-module-process-api-httpListenerConfig"
+			path="/api/*">
+			<http:response
+				statusCode="#[vars.httpStatus default 200]">
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:response>
+			<http:error-response
+				statusCode="#[vars.httpStatus default 500]">
+				<http:body>#[payload]</http:body>
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:router
+			config-ref="transport-module-process-api-config" />
+	</flow>
+	<flow name="transport-module-process-api-console">
+		<http:listener
+			config-ref="transport-module-process-api-httpListenerConfig"
+			path="/console/*">
+			<http:response
+				statusCode="#[vars.httpStatus default 200]">
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:response>
+			<http:error-response
+				statusCode="#[vars.httpStatus default 500]">
+				<http:body>#[payload]</http:body>
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:console
+			config-ref="transport-module-process-api-config" />
+		<error-handler>
+			<on-error-propagate type="APIKIT:NOT_FOUND">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">404
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow
+		name="get:\booking\(transportType)\routes:transport-module-process-api-config">
+		<flow-ref doc:name="common-flowsSub_Flow" doc:id="334e23aa-1ccf-40a1-a580-92e8f28787c3" name="common-flowsSub_Flow"/>
+		<ee:transform doc:name="Transform Message">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    companyCode: "TransNational",
+    originLocation: {
+      locationCode: "BEN-SG",
+      locationDesc: "Beauna Vista Singapore"
+    },
+    destinationLocation: {
+      locationCode: "KLG-MY",
+      locationDesc: "Klang Malaysia"
+    }
+  }, 
+  {
+    companyCode: "TransNational",
+    originLocation: {
+      locationCode: "BEN-SG",
+      locationDesc: "Beauna Vista Singapore"
+    },
+    destinationLocation: {
+      locationCode: "KLG-MY",
+      locationDesc: "Klang Malaysia"
+    }
+  }, 
+  {
+    companyCode: "TransNational",
+    originLocation: {
+      locationCode: "BEN-SG",
+      locationDesc: "Beauna Vista Singapore"
+    },
+    destinationLocation: {
+      locationCode: "KLG-MY",
+      locationDesc: "Klang Malaysia"
+    }
+  }
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow
+		name="get:\booking\(transportType)\schedules:transport-module-process-api-config">
+		<flow-ref doc:name="common-flowsSub_Flow" doc:id="e092761e-c853-4b07-8993-0d0b57dfa028" name="common-flowsSub_Flow" />
+		<ee:transform doc:name="Transform Message">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  departureSchedules: [
+    {
+      companyName: "TravelOnTip",
+      availableSeats: 20,
+      departureDateTime: "2019-04-30T16:41:41",
+      travelRoute: {
+        destinationLocation: {
+          locationCode: "KLG-MY",
+          locationDesc: "Klang Malaysia"
+        },
+        originLocation: {
+          locationCode: "BEN-SG",
+          locationDesc: "Beauna Vista Singapore"
+        }
+      }
+    }, 
+    {
+      companyName: "FastGo",
+      availableSeats: 30,
+      departureDateTime: "2019-04-30T18:41:41",
+      travelRoute: {
+        destinationLocation: {
+          locationCode: "KLG-MY",
+          locationDesc: "Klang Malaysia"
+        },
+        originLocation: {
+          locationCode: "BL-SG",
+          locationDesc: "Beauna Vista Singapore"
+        }
+      }
+    }
+  ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

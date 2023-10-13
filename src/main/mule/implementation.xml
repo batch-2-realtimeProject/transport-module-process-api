@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="routes-implementation-flow" doc:id="99cd32c1-29b0-4108-a652-338220805a92" >
+		<logger level="INFO" doc:name="Logger" doc:id="f09cf9e7-3cf5-4ecc-9916-95a699a7f133" message='#["requested recevied for routes under txn#: " ++ vars.transactionId]'/>
+		<http:request method="GET" doc:name="fastgo-sapi-request" doc:id="a2eb83b7-07ba-4cdf-8cc0-cf8f0f07417d" config-ref="HTTP_Request_configuration" path="/api/routes/{transportType}/{transportCompany}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	transportType : vars.transportType,
+	transportCompany : vars.transportCompany
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
+</mule>
